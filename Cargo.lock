@@ -1040,6 +1040,7 @@ dependencies = [
  "reqwest",
  "secrecy",
  "serde",
+ "serde_json",
  "thiserror",
  "tokio",
 ]

@@ -1,7 +1,7 @@
 use actix_web::{dev::Server, web, App, HttpServer};
 use std::net::TcpListener;
 
-use crate::{configuration::Settings, moralis_client::MoralisClient, routes::health_check};
+use crate::{configuration::Settings, moralis_client::MoralisClient, routes::{health_check, get_nfts_by_wallet}};
 pub struct Application {
     port: u16,
     server: Server,
@@ -18,6 +18,7 @@ pub fn run(
     let server = HttpServer::new(move || {
         App::new()
             .route("/health_check", web::get().to(health_check))
+            .route("/nft", web::get().to(get_nfts_by_wallet))
             .app_data(moralis_client.clone())
             .app_data(base_url.clone())
     })

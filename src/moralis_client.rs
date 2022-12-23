@@ -37,7 +37,8 @@ impl MoralisClient {
             self.key.expose_secret(),
         )
         .send()
-        .await?;
+        .await?
+        .error_for_status()?;
         let body = response.text().await?;
         Ok(body)
     }
