@@ -4,7 +4,10 @@ use std::net::TcpListener;
 use crate::{
     configuration::Settings,
     moralis_client::MoralisClient,
-    routes::{get_nfts_by_wallet, health_check, get_nft_collection_by_wallet, get_nft_transfers_by_wallet},
+    routes::{
+        get_nft_collection_by_wallet, get_nft_transfers_by_wallet, get_nfts_by_wallet,
+        get_transactions_by_wallet, get_verbose_transactions_by_wallet, health_check,
+    },
 };
 pub struct Application {
     port: u16,
@@ -26,9 +29,17 @@ pub fn run(
                 web::scope("/nft/{address}")
                     .route("", web::get().to(get_nfts_by_wallet))
                     .route("/collections", web::get().to(get_nft_collection_by_wallet))
-                    .route("/transfers", web::get().to(get_nft_transfers_by_wallet))
+                    .route("/transactions", web::get().to(get_nft_transfers_by_wallet)),
             )
-            .route("/nft", web::get().to(get_nfts_by_wallet))
+            .service(
+                web::scope("/transaction/{address}")
+                    .route("", web::get().to(get_transactions_by_wallet))
+                    .route(
+                        "/verbose",
+                        web::get().to(get_verbose_transactions_by_wallet),
+                    ),
+            )
+            // .route("/nft", web::get().to(get_nfts_by_wallet))
             .app_data(moralis_client.clone())
             .app_data(base_url.clone())
     })
