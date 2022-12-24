@@ -1,7 +1,7 @@
 use actix_web::{web, HttpResponse, ResponseError, http::StatusCode};
 use serde::Serialize;
 
-use crate::{moralis_client::{MoralisClient}, utils::error_chain_fmt};
+use crate::{moralis_client::{MoralisClient}, utils::error_chain_fmt, domains::EthereumAddress};
 
 #[derive(serde::Deserialize)]
 pub struct Parameters {
@@ -12,8 +12,9 @@ pub async fn get_nfts_by_wallet(
     parameters: web::Query<Parameters>,
     moralis_client: web::Data<MoralisClient>,
 ) -> Result<HttpResponse, NftFetchError> {
+    let address = EthereumAddress::parse(parameters.address.clone()).map_err(NftFetchError::ValidationError)?;
     let result = moralis_client
-        .get_request(&format!("{}/nft", parameters.address))
+        .get_request(&format!("{}/nft", address))
         .await?;
     let result = result
         .parse::<serde_json::Value>()
@@ -24,6 +25,8 @@ pub async fn get_nfts_by_wallet(
 
 #[derive(thiserror::Error)]
 pub enum NftFetchError {
+    #[error("{0}")]
+    ValidationError(String),
     #[error("Failed to fetch nfts from Moralis")]
     MoralisError(#[from] reqwest::Error),
     #[error(transparent)]
@@ -40,7 +43,8 @@ impl std::fmt::Debug for NftFetchError {
 impl ResponseError for NftFetchError {
     fn status_code(&self) -> StatusCode {
         match self {
-            Self::MoralisError(_) => StatusCode::BAD_REQUEST,
+            Self::ValidationError(_) => StatusCode::BAD_REQUEST,
+            Self::MoralisError(_) |
             Self::UnexpectedError(_) => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }

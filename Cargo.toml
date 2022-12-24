@@ -22,3 +22,4 @@ anyhow = "1.0.68"
 serde = { version = "1", features = ["derive"] }
 config = "0.13.3"
 serde_json = "1.0.91"
+eth-address = "0.1.0"
