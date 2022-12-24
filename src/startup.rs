@@ -6,7 +6,8 @@ use crate::{
     moralis_client::MoralisClient,
     routes::{
         get_nft_collection_by_wallet, get_nft_transfers_by_wallet, get_nfts_by_wallet,
-        get_transactions_by_wallet, get_verbose_transactions_by_wallet, health_check,
+        get_token_balance_by_wallet, get_token_transaction_by_wallet, get_transactions_by_wallet,
+        get_verbose_transactions_by_wallet, health_check,
     },
 };
 pub struct Application {
@@ -37,6 +38,14 @@ pub fn run(
                     .route(
                         "/verbose",
                         web::get().to(get_verbose_transactions_by_wallet),
+                    ),
+            )
+            .service(
+                web::scope("/token/{address}")
+                    .route("", web::get().to(get_token_balance_by_wallet))
+                    .route(
+                        "/transactions",
+                        web::get().to(get_token_transaction_by_wallet),
                     ),
             )
             // .route("/nft", web::get().to(get_nfts_by_wallet))
