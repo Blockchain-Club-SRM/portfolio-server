@@ -5,8 +5,9 @@ use crate::{
     configuration::Settings,
     moralis_client::MoralisClient,
     routes::{
-        get_nft_collection_by_wallet, get_nft_transfers_by_wallet, get_nfts_by_wallet,
-        get_token_balance_by_wallet, get_token_transaction_by_wallet, get_transactions_by_wallet,
+        get_ens_name, get_native_balance_by_wallet, get_nft_collection_by_wallet,
+        get_nft_transfers_by_wallet, get_nfts_by_wallet, get_token_balance_by_wallet,
+        get_token_transaction_by_wallet, get_transactions_by_wallet,
         get_verbose_transactions_by_wallet, health_check,
     },
 };
@@ -26,8 +27,17 @@ pub fn run(
     let server = HttpServer::new(move || {
         App::new()
             .route("/health_check", web::get().to(health_check))
+            .route("/ens/{address}", web::get().to(get_ens_name))
+            .route(
+                "/nft/{address}",
+                web::get().to(get_native_balance_by_wallet),
+            )
             .service(
                 web::scope("/{chain}")
+                    .route(
+                        "/balance/{address}",
+                        web::get().to(get_native_balance_by_wallet),
+                    )
                     .service(
                         web::scope("/nft/{address}")
                             .route("", web::get().to(get_nfts_by_wallet))
