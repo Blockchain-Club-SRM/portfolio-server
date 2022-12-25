@@ -27,28 +27,30 @@ pub fn run(
         App::new()
             .route("/health_check", web::get().to(health_check))
             .service(
-                web::scope("/nft/{address}")
-                    .route("", web::get().to(get_nfts_by_wallet))
-                    .route("/collections", web::get().to(get_nft_collection_by_wallet))
-                    .route("/transactions", web::get().to(get_nft_transfers_by_wallet)),
-            )
-            .service(
-                web::scope("/transaction/{address}")
-                    .route("", web::get().to(get_transactions_by_wallet))
-                    .route(
-                        "/verbose",
-                        web::get().to(get_verbose_transactions_by_wallet),
+                web::scope("/{chain}")
+                    .service(
+                        web::scope("/nft/{address}")
+                            .route("", web::get().to(get_nfts_by_wallet))
+                            .route("/collections", web::get().to(get_nft_collection_by_wallet))
+                            .route("/transactions", web::get().to(get_nft_transfers_by_wallet)),
+                    )
+                    .service(
+                        web::scope("/transaction/{address}")
+                            .route("", web::get().to(get_transactions_by_wallet))
+                            .route(
+                                "/verbose",
+                                web::get().to(get_verbose_transactions_by_wallet),
+                            ),
+                    )
+                    .service(
+                        web::scope("/token/{address}")
+                            .route("", web::get().to(get_token_balance_by_wallet))
+                            .route(
+                                "/transactions",
+                                web::get().to(get_token_transaction_by_wallet),
+                            ),
                     ),
             )
-            .service(
-                web::scope("/token/{address}")
-                    .route("", web::get().to(get_token_balance_by_wallet))
-                    .route(
-                        "/transactions",
-                        web::get().to(get_token_transaction_by_wallet),
-                    ),
-            )
-            // .route("/nft", web::get().to(get_nfts_by_wallet))
             .app_data(moralis_client.clone())
             .app_data(base_url.clone())
     })
@@ -63,7 +65,7 @@ impl Application {
         let moralis_client = MoralisClient::new(
             configuration.moralis_client.url,
             configuration.moralis_client.key,
-            configuration.moralis_client.chain,
+            // configuration.moralis_client.chain,
             timeout,
         );
         let address = configuration.application.url();

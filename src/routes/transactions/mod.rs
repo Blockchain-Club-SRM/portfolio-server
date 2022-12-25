@@ -1,6 +1,6 @@
 mod transaction_fetch_error;
 mod get_transactions_by_wallet;
 mod get_transactions_by_wallet_verbose;
-pub use transaction_fetch_error::*;
-pub use get_transactions_by_wallet::*;
-pub use get_transactions_by_wallet_verbose::*;
+pub use transaction_fetch_error::TransactionFetchError;
+pub use get_transactions_by_wallet::{get_transactions_by_wallet, transactions_by_wallet};
+pub use get_transactions_by_wallet_verbose::{get_verbose_transactions_by_wallet, verbose_transactions_by_wallet};
