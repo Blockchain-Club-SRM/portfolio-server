@@ -1,12 +1,12 @@
-use std::collections::HashMap;
-
 use reqwest::Client;
 use secrecy::{ExposeSecret, Secret};
+
+use crate::domains::Chain;
 
 pub struct MoralisClient {
     http_client : Client,
     url: String,
-    chain:String,
+    // chain:String,
     key: Secret<String>
 }
 
@@ -14,7 +14,7 @@ impl MoralisClient {
     pub fn new(
         url:String,
         key:Secret<String>,
-        chain:String,
+        // chain:String,
         timeout: std::time::Duration,
     )->Self {
 
@@ -22,16 +22,14 @@ impl MoralisClient {
         Self {
             http_client,
             url,
-            chain,
+            // chain,
             key
         }
     }
-    pub async fn get_request(&self, request: &str) -> Result<String, reqwest::Error> {
+    pub async fn get_request(&self, request: &str, chain:&Chain) -> Result<reqwest::Response, reqwest::Error> {
         let url = format!("{}/{}", self.url, request);
-        let mut params = HashMap::new();
-        params.insert("chain", &self.chain);  
         let response = self.http_client
-        .get(&url)
+        .get(format!("{}?chain={}",&url, chain.as_str()))
         .header(
             "X-API-Key",
             self.key.expose_secret(),
@@ -39,7 +37,6 @@ impl MoralisClient {
         .send()
         .await?
         .error_for_status()?;
-        let body = response.text().await?;
-        Ok(body)
+        Ok(response)
     }
 }

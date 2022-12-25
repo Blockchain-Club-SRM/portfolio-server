@@ -49,7 +49,7 @@ impl ApplicationSetting {
 pub struct MoralisClientSetting {
     // pub app_id: String,
     pub url: String,
-    pub chain : String,
+    // pub chain : String,
     pub key: Secret<String>,
     pub timeout_milliseconds: u64,
 }

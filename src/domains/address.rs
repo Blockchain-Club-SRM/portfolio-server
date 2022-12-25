@@ -1,6 +1,5 @@
 use eth_address::address;
 #[derive(Debug)]
-
 pub struct EthereumAddress(String);
 
 

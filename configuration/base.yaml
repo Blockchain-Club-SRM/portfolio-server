@@ -3,5 +3,5 @@ application:
   host: 0.0.0.0
 moralis_client:
   url: "https://deep-index.moralis.io/api/v2" 
-  chain: 'eth'
+  # chain: 'eth'
   timeout_milliseconds: 10000
